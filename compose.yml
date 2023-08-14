@@ -1,114 +1,18 @@
 version: "3"
 
 services:
-  # envoy:
-  #   image: envoyproxy/envoy:dev-3f198ba35873bba736374ea568fcfa6c4d903215
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   expose:
-  #     - 9901
-  #   volumes:
-  #     - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
-  #     - ./envoy/sert.crt:/etc/ssl/certs/sert.crt
-  #     - ./envoy/key.key:/etc/ssl/certs/key.key
-  #   restart: unless-stopped
-
-  # mongo:
-  #   image: mongo
-  #   # ports:
-  #   #   - 27017:27017
-  #   expose:
-  #     - 27017
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: example
-  #   volumes:
-  #     - mongodb_data:/data/db
-  #   restart: unless-stopped
-
   # main_api:
   #   build:
   #     context: .
   #     dockerfile: dockerfile
-  #   expose:
-  #     - 1000
-  #   environment:
-  #     - PORT=1000
-  #     - MONGOLINK=mongodb://root:example@mongo:27017
-  #     - REDISLINK=redis://redis:6379
-  #     - STORAGEADDR=minio
-  #     - STORAGEPORT=9000
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://127.0.0.1:1000/debug/healthcheck"]
-  #     interval: 5s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 5s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 2
-  #   depends_on: [redis]
+  #   ports: [1000:1000]
+  #   environment: [PORT=1000]
   #   restart: unless-stopped
-
-  # redis:
-  #   image: "redis:alpine"
-  #   command: redis-server --save "" --loglevel warning
-  #   expose:
-  #     - 6379
-  #   volumes:
-  #     - redis_data:/data
-  #   restart: unless-stopped
-
-  # minio:
-  #   image: minio/minio
-  #   command: server /data
-  #   expose:
-  #     - 9000
-  #     - 9001
-  #   environment:
-  #     MINIO_ROOT_USER: ${STORAGEACC}
-  #     MINIO_ROOT_PASSWORD: ${STORAGEPWD}
-  #     MINIO_CONSOLE_ADDRESS: ":9001"
-  #     MINIO_SERVER_URL: http://${STORAGEDOMAIN}
-  #     MINIO_PROMETHEUS_AUTH_TYPE: public
-  #   volumes:
-  #     - storage_data:/data
-  #   extra_hosts:
-  #     # for local testing only, to avoid shadowing by container 'localhost' while console tries to lookup storage.localhost
-  #     - "storage.localhost:host-gateway"
-  #   restart: unless-stopped
-
-  # prometheus:
-  #   image: prom/prometheus
-  #   command: ["--config.file=/etc/prometheus/prometheus.yml"]
-  #   expose:
-  #     - 9090
-  #   volumes:
-  #     - prometheus_data:/prometheus
-  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #   restart: unless-stopped
-
-  # grafana:
-  #   image: grafana/grafana
-  #   expose:
-  #     - 3000
-  #   volumes:
-  #     - grafana_data:/var/lib/grafana
-  #     - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-  #     - ./grafana/provisioning:/etc/grafana/provisioning
-  #     - ./grafana/dashboards:/var/lib/grafana/dashboards
-  #   environment:
-  #     - GF_SECURITY_ADMIN_PASSWORD=adminpwd
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - prometheus
 
   elastic:
     image: 'bitnami/elasticsearch:latest'
     ports: [9200:9200]
-    volumes:
-      - elastic_data:/bitnami/elasticsearch/data
+    volumes: [elastic_data:/bitnami/elasticsearch/data]
     restart: unless-stopped
     
 
@@ -123,9 +27,4 @@ services:
 
 
 volumes:
-  mongodb_data:
-  storage_data:
-  redis_data:
-  prometheus_data:
-  grafana_data:
   elastic_data:
