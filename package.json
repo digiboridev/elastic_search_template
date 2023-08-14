@@ -1,0 +1,25 @@
+{
+  "name": "elasticsearch_template",
+  "scripts": {
+    "debug:tsw": "tsc --watch",
+    "debug:nodemon": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "build": "npm i && tsc",
+    "start": "node lib/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.9.0",
+    "@fastify/cors": "^8.2.1",
+    "fastify": "^4.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.2",
+    "@types/qs": "^6.9.7",
+    "@types/ws": "^8.5.5",
+    "typescript": "^5.0.4"
+  },
+  "private": true
+}
