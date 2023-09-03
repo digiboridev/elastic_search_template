@@ -47,9 +47,6 @@ export interface PersonSearchService {
   searchPersons(params: SearchParams): Promise<Person[]>;
 }
 
-
-
-
 // Elasticsearch implementation
 export class PersonSearchServiceESImpl implements PersonSearchService {
   private readonly client: Client;
@@ -58,10 +55,10 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
     this.client = new Client({ node: url });
   }
 
-  async createIndex() {
+  private async _createIndex() {
     await this.client.indices.create({
       index: "persons",
-      
+
       body: {
         mappings: {
           properties: {
@@ -78,16 +75,26 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
     });
   }
 
-  async deleteIndex() {
+  private async _deleteIndex() {
     await this.client.indices.delete({ index: "persons" }).catch(() => {
       console.log("Index does not exist");
     });
+  }
+
+  async setupIndex(cleanUp: boolean = false) {
+    const indexExists: boolean = await this.client.indices.exists({ index: "persons" });
+    if (cleanUp && indexExists) await this._deleteIndex();
+    if (!indexExists || cleanUp) await this._createIndex();
   }
 
   async indexPersons(persons: Person[]) {
     await this.client.bulk({
       operations: persons.flatMap((person) => [{ index: { _index: "persons", _id: person.id } }, person]),
     });
+  }
+
+  async removePerson(id: string) {
+    await this.client.delete({ index: "persons", id: id });
   }
 
   async matchByInterestNearby({ interests, location, distanceKm = 1, from = 0, size = 10 }: MatchNearbyParams): Promise<Person[]> {
@@ -103,7 +110,6 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
             unit: "km",
             distance_type: "plane",
           },
-
         },
       ],
       body: {
@@ -132,7 +138,6 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
     return result.hits.hits.map((hit) => hit._source!);
   }
 
-
   async searchPersons({ query, from = 0, size = 10 }: SearchParams): Promise<Person[]> {
     const result = await this.client.search<Person>({
       index: "persons",
@@ -143,7 +148,7 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
           multi_match: {
             query: query,
             fields: ["firstName", "lastName", "interests", "job"],
-          }
+          },
         },
       },
     });
@@ -151,4 +156,3 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
     return result.hits.hits.map((hit) => hit._source!);
   }
 }
-
