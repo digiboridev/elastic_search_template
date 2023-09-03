@@ -15,12 +15,12 @@ import { personsDataSet } from "./utils/datasets";
 
     // Test multiparameter filter with location
     const interestPersonsNearby = await search.matchByInterestNearby({
-      // interests: ["hiking"],
+      interests: ["hiking"],
       // interests: ["swimming"],
-      interests: ["smoking", "drinking"],
+      // interests: ["smoking", "drinking"],
       location: {
-        lat: 47.377,
-        lon: 8.539,
+        lat: 20.377,
+        lon: 1.539,
       },
       // distanceKm: 1000
       // distanceKm: 10000,

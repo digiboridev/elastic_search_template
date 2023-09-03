@@ -61,6 +61,7 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
   async createIndex() {
     await this.client.indices.create({
       index: "persons",
+      
       body: {
         mappings: {
           properties: {
@@ -94,6 +95,17 @@ export class PersonSearchServiceESImpl implements PersonSearchService {
       index: "persons",
       from: from,
       size: size,
+      sort: [
+        {
+          _geo_distance: {
+            location: location,
+            order: "desc",
+            unit: "km",
+            distance_type: "plane",
+          },
+
+        },
+      ],
       body: {
         query: {
           bool: {
