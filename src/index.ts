@@ -13,8 +13,8 @@ import { personsDataSet } from "./utils/datasets";
     // Wait until index is ready
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Search for persons with interests
-    const interestPeoplesNearby = await search.matchInterestedPersonsNearby({
+    // Test multiparameter filter with location
+    const interestPersonsNearby = await search.matchByInterestNearby({
       // interests: ["hiking"],
       // interests: ["swimming"],
       interests: ["smoking", "drinking"],
@@ -27,7 +27,17 @@ import { personsDataSet } from "./utils/datasets";
       distanceKm: 100000,
     });
 
-    console.log(interestPeoplesNearby);
+    console.log(interestPersonsNearby);
+
+    // Test text search
+    const foundedByTextPersons = await search.searchPersons({
+      query: "hiking",
+      // query: "security",
+      // query: "smoking artur",
+      // query: "gangsta poop",
+    });
+
+    console.log(foundedByTextPersons);
   } catch (error) {
     console.error(error);
     process.exit(1);
