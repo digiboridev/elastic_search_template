@@ -2,7 +2,56 @@ import { Client } from "@elastic/elasticsearch";
 import { Person } from "../entity/person";
 import { GeoLocation } from "../entity/location";
 
-export class PersonSearchServiceESImpl {
+export type MatchNearbyParams = {
+  interests: string[];
+  location: GeoLocation;
+  distanceKm?: number;
+  from?: number;
+  size?: number;
+};
+
+export type SearchParams = {
+  query: string;
+  from?: number;
+  size?: number;
+};
+
+export interface PersonSearchService {
+  /**
+   * Searches persons by interests nearby
+   * @param params
+   * @returns Promise<Person[]>
+   * @throws Error
+   * @example
+   * const interestPersonsNearby = await search.matchByInterestNearby({
+   *  interests: ["hiking"],
+   *  location: {
+   *    lat: 47.377,
+   *    lon: 8.539,
+   *  },
+   *  distanceKm: 100000,
+   * });
+   */
+  matchByInterestNearby(params: MatchNearbyParams): Promise<Person[]>;
+
+  /**
+   * Searches persons by text
+   * @param params
+   * @returns Promise<Person[]>
+   * @throws Error
+   * @example
+   * const foundedByTextPersons = await search.searchPersons({
+   *  query: "hiking",
+   * });
+   */
+  searchPersons(params: SearchParams): Promise<Person[]>;
+}
+
+
+
+
+// Elasticsearch implementation
+export class PersonSearchServiceESImpl implements PersonSearchService {
   private readonly client: Client;
 
   constructor({ url }: { url: string }) {
@@ -91,16 +140,3 @@ export class PersonSearchServiceESImpl {
   }
 }
 
-export type MatchNearbyParams = {
-  interests: string[];
-  location: GeoLocation;
-  distanceKm?: number;
-  from?: number;
-  size?: number;
-};
-
-export type SearchParams = {
-  query: string;
-  from?: number;
-  size?: number;
-};
